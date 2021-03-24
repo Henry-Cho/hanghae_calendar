@@ -19,12 +19,17 @@ class App extends React.Component {
 
   render() {
     return (
-      <div className="App">
+      <AppFrame>
         <Route exact path="/" component={CalendarBody} />
         <Route path="/add_new" component={Detail} />
-      </div>
+      </AppFrame>
     );
   }
 }
+
+const AppFrame = styled.div`
+  display: flex;
+  justify-content: center;
+`;
 
 export default withRouter(App);
