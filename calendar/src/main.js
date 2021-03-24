@@ -4,7 +4,7 @@ import dayGridPlugin from "@fullcalendar/daygrid";
 import interactionPlugin from "@fullcalendar/interaction";
 import styled from "styled-components";
 import { useSelector, useDispatch } from "react-redux";
-import { loadBucketFB } from "./redux/modules/bucket";
+import { loadBucketFB, updateBucketFB } from "./redux/modules/bucket";
 import Modal from "react-modal";
 
 Modal.setAppElement("#root");
@@ -14,25 +14,34 @@ const DemoApp = (props) => {
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const [date_all, setDate] = useState("");
   const [name, setName] = useState();
+  const [id, setID] = useState();
   const bucket_list = useSelector((state) => state.bucket.list);
   const dispatch = useDispatch();
+  // modal operation
+  // Open modal
   const openModal = (e) => {
     console.log(e);
     setName(e.event._def.title);
     setDate(e.event.startStr);
+    setID(e.event._def.publicId);
     setModalIsOpen(true);
   };
-
+  // Close modal
   const closeModal = () => {
     setModalIsOpen(false);
   };
-
+  // load items from firebase
   React.useEffect(() => {
     dispatch(loadBucketFB());
   }, []);
 
   let schedule = bucket_list.map((bucket, idx) => {
-    return { title: bucket.title, date: bucket.date, id: bucket.id };
+    return {
+      title: bucket.title,
+      date: bucket.date,
+      id: bucket.id,
+      color: bucket.completed ? "#F45866" : "#F49390",
+    };
   });
 
   return (
@@ -59,7 +68,14 @@ const DemoApp = (props) => {
             {name} {date_all}
           </h2>
           <ModalBtn>
-            <button> 일정 완료 </button>
+            <button
+              onClick={() => {
+                dispatch(updateBucketFB(id));
+                closeModal();
+              }}
+            >
+              일정 완료
+            </button>
             <button> 일정 삭제하기 </button>
             <button onClick={closeModal}> 닫기 </button>
           </ModalBtn>

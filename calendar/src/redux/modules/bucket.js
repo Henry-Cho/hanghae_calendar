@@ -6,6 +6,7 @@ const bucket_db = firestore.collection("bucket");
 // Actions
 const LOAD = "bucket/LOAD";
 const CREATE = "bucket/CREATE";
+const UPDATE = "bucket/UPDATE";
 
 // initial state
 
@@ -23,6 +24,11 @@ export const loadBucket = (bucket) => {
 // input 에서 버킷아이템 생성해주는 것!
 export const createBucket = (schedule) => {
   return { type: CREATE, schedule };
+};
+
+// 특정 아이템의 completed 상태를 받는 것!
+export const updateBucket = (bucket) => {
+  return { type: UPDATE, bucket };
 };
 
 // Firebase 와 통신하는 함수들
@@ -62,6 +68,23 @@ export const addBucketFB = (schedule) => {
   };
 };
 
+export const updateBucketFB = (bucket) => {
+  return function (dispatch) {
+    bucket_db
+      .doc(bucket)
+      .update({
+        completed: true,
+      })
+      .then(() => {
+        dispatch(updateBucket(bucket));
+        console.log("Document successfully updated!");
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
+};
+
 // Reducer
 export default function reducer(state = initialState, action = {}) {
   switch (action.type) {
@@ -93,6 +116,27 @@ export default function reducer(state = initialState, action = {}) {
       const new_bucket_list = [...state.list, action.schedule];
       return { list: new_bucket_list };
     }
+
+    case "bucket/UPDATE": {
+      //const bucket_list = state.list.map((l, idx) => {
+      const bucket_list = state.list.map((l, idx) => {
+        if (l.id === action.bucket) {
+          return { ...l, completed: true };
+        } else {
+          return l;
+        }
+      });
+      console.log(bucket_list);
+      return { list: bucket_list };
+    }
+    //   if (idx === action.bucket) {
+    //     return { ...l, completed: true };
+    //   } else {
+    //     return l;
+    //   }
+    // });
+    // return { list: bucket_list };
+
     default:
       return state;
   }
