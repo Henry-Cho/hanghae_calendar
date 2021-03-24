@@ -3,38 +3,40 @@ import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import interactionPlugin from "@fullcalendar/interaction";
 import styled from "styled-components";
+import { useSelector, useDispatch } from "react-redux";
+import { loadBucketFB } from "./redux/modules/bucket";
 
-class DemoApp extends React.Component {
-  render() {
-    return (
-      <FullCalendarFrame>
-        <ButtonStyle
-          onClick={() => {
-            this.props.history.push("/add_new");
-          }}
-        >
-          +
-        </ButtonStyle>
-        <FullCalendar
-          plugins={[dayGridPlugin, interactionPlugin]}
-          initialView="dayGridMonth"
-          dateClick={this.handleDateClick}
-          weekends={false}
-          events={[
-            { title: "event 1", date: "2021-03-10" },
-            { title: "event 2", date: "2021-03-12" },
-          ]}
-        ></FullCalendar>
-      </FullCalendarFrame>
-    );
-  }
+const DemoApp = (props) => {
+  const bucket_list = useSelector((state) => state.bucket.list); // props.bucket_list;
+  const dispatch = useDispatch();
 
-  handleDateClick = (props) => {
-    // bind with an arrow function
-    // alert(props.dateStr);
-    console.log(props);
-  };
-}
+  React.useEffect(() => {
+    dispatch(loadBucketFB());
+  }, []);
+
+  console.log(bucket_list);
+  let schedule = bucket_list.map((bucket, idx) => {
+    return { title: bucket.title, date: bucket.date };
+  });
+
+  return (
+    <FullCalendarFrame>
+      <ButtonStyle
+        onClick={() => {
+          props.history.push("/add_new");
+        }}
+      >
+        +
+      </ButtonStyle>
+      <FullCalendar
+        plugins={[dayGridPlugin, interactionPlugin]}
+        initialView="dayGridMonth"
+        weekends={false}
+        events={schedule}
+      ></FullCalendar>
+    </FullCalendarFrame>
+  );
+};
 
 const ButtonStyle = styled.button`
   width: 80px;
@@ -45,6 +47,7 @@ const ButtonStyle = styled.button`
   position: sticky;
   top: 200px;
   z-index: 5;
+  color: white;
 `;
 
 const FullCalendarFrame = styled.div`

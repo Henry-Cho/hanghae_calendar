@@ -1,6 +1,5 @@
 import React, { useRef } from "react";
 import styled from "styled-components";
-import BucketList from "./BucketList";
 
 import { connect } from "react-redux";
 import {
@@ -81,7 +80,7 @@ const Detail = (props) => {
           id="datetime-local"
           label="Your schedule"
           type="datetime-local"
-          defaultValue="0000-00-00T00:00"
+          defaultValue="yyyy-MM-ddThh:mm"
           InputLabelProps={{
             shrink: true,
           }}
@@ -89,34 +88,31 @@ const Detail = (props) => {
         />
         <hr></hr>
         <Textarea type="text" ref={inputText} />
-
-        <BucketList bucket_list={props.bucket_list} />
       </Container>
       {/* 인풋박스와 추가하기 버튼을 넣어줬어요. */}
       <Input>
-        <input type="text" />
         <button
           onClick={() => {
-            dispatch(addBucketFB(inputText.current.value));
+            let date_info = dateText.current.value.split("T");
+            let date = date_info[0];
+            let time = date_info[1];
+            dispatch(
+              addBucketFB(inputText.current.value, date, time),
+              props.history.goBack(),
+              alert("새로운 일정이 생성되었습니다.")
+            );
           }}
         >
           추가하기
         </button>
         <button
           onClick={() => {
-            console.log(inputText.current.value, dateText.current.value);
+            props.history.goBack();
           }}
         >
-          닫기
+          뒤로 가기
         </button>
       </Input>
-      <button
-        onClick={() => {
-          props.history.goBack();
-        }}
-      >
-        뒤로 가기
-      </button>
     </div>
   );
 };
@@ -129,6 +125,8 @@ const Input = styled.div`
   margin: 20px auto;
   border-radius: 5px;
   border: 1px solid #ddd;
+  display: flex;
+  justify-content: space-between;
 `;
 
 const Container = styled.div`

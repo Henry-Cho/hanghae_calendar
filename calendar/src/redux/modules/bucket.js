@@ -21,8 +21,8 @@ export const loadBucket = (bucket) => {
 };
 
 // input 에서 버킷아이템 생성해주는 것!
-export const createBucket = (textInput) => {
-  return { type: CREATE, textInput };
+export const createBucket = (inputText, date, time) => {
+  return { type: CREATE, inputText, date, time };
 };
 
 // Firebase 와 통신하는 함수들
@@ -45,12 +45,13 @@ export const loadBucketFB = () => {
   };
 };
 
-export const addBucketFB = (bucket) => {
+export const addBucketFB = (inputText, date, time) => {
   return function (dispatch) {
-    let bucket_data = { text: bucket };
+    let bucket_data = { title: inputText, date: date, time: time };
 
     bucket_db.add(bucket_data).then((docRef) => {
       bucket_data = { ...bucket_data, id: docRef.id };
+      console.log(bucket_data);
       dispatch(createBucket(bucket_data));
     });
   };
@@ -69,7 +70,12 @@ export default function reducer(state = initialState, action = {}) {
 
     case "bucket/CREATE": {
       //state(initial state) 안에 list 가 있는 형태
-      const new_bucket_list = [...state.list, action.textInput];
+      const new_bucket_list = [
+        ...state.list,
+        action.inputText,
+        action.date,
+        action.time,
+      ];
       return { list: new_bucket_list };
     }
     default:
