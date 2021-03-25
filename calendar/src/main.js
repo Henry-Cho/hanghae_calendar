@@ -58,6 +58,7 @@ const DemoApp = (props) => {
   return (
     <CalendarFrame>
       <FullCalendar
+        height={"auto"}
         plugins={[dayGridPlugin, interactionPlugin]}
         initialView="dayGridMonth"
         displayEventTime={true}
@@ -66,8 +67,8 @@ const DemoApp = (props) => {
         eventClick={(info) => {
           openModal(info);
         }}
-      ></FullCalendar>
-      <ButtonFrame>
+      />
+      <ButtonFrame className="ButtonFrame">
         <ButtonStyle
           onClick={() => {
             props.history.push("/add_new");
@@ -98,8 +99,9 @@ const DemoApp = (props) => {
           <ModalTitle>
             {name} <hr /> {date_all.split("T")[0]}
           </ModalTitle>
-          <ModalBtn>
+          <ModalBtn className="ModalBtn">
             <BtnInModal
+              className="BtnInModal"
               onClick={() => {
                 dispatch(updateBucketFB(id));
                 closeModal();
@@ -108,6 +110,7 @@ const DemoApp = (props) => {
               일정 완료
             </BtnInModal>
             <BtnInModal
+              className="BtnInModal"
               onClick={() => {
                 dispatch(deleteBucketFB(id));
                 closeModal();
@@ -115,7 +118,9 @@ const DemoApp = (props) => {
             >
               일정 삭제하기
             </BtnInModal>
-            <BtnInModal onClick={closeModal}> 닫기 </BtnInModal>
+            <BtnInModal className="BtnInModal" onClick={closeModal}>
+              닫기
+            </BtnInModal>
           </ModalBtn>
         </Modal>
       </ModalFrame>
@@ -154,7 +159,6 @@ const ButtonStyle = styled.button`
 const ModalFrame = styled.div`
   max-width: 400px;
   max-height: 400px;
-  left: 50%;
 `;
 
 const CalendarFrame = styled.div`
@@ -163,7 +167,7 @@ const CalendarFrame = styled.div`
 `;
 
 const BtnInModal = styled.button`
-  padding: 20px 20px 20px 20px;
+  padding: 15px 15px 15px 15px;
   border: none;
   border-radius: 10px;
   background: white;
@@ -181,8 +185,8 @@ const BtnInModal = styled.button`
 `;
 
 const ModalBtn = styled.div`
-  width: 400px;
-  height: 100px;
+  width: 100%;
+  height: 40%;
   display: flex;
   justify-content: space-evenly;
   align-items: center;
@@ -197,8 +201,8 @@ const ButtonFrame = styled.div`
   justify-content: space-evenly;
   align-items: center;
   position: fixed;
-  top: 30%;
-  left: 90%;
+  bottom: 10px;
+  right: 10px;
   z-index: 5;
   border-radius: 10px;
 `;
@@ -211,4 +215,5 @@ const ModalTitle = styled.h2`
   padding: 20px;
   border-radius: 10px;
 `;
+
 export default DemoApp;

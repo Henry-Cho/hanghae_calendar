@@ -19,7 +19,7 @@ class App extends React.Component {
 
   render() {
     return (
-      <AppFrame>
+      <AppFrame className="AppFrame">
         <Route exact path="/" component={CalendarBody} />
         <Route path="/add_new" component={Detail} />
       </AppFrame>
@@ -27,10 +27,6 @@ class App extends React.Component {
   }
 }
 
-const AppFrame = styled.div`
-  padding: 10px;
-  margin: 10px;
-  width: 90%;
-`;
+const AppFrame = styled.div``;
 
 export default withRouter(App);
