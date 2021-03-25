@@ -197,8 +197,8 @@ const ButtonFrame = styled.div`
   justify-content: space-evenly;
   align-items: center;
   position: fixed;
-  top: 350px;
-  left: 940px;
+  top: 30%;
+  left: 90%;
   z-index: 5;
   border-radius: 10px;
 `;
