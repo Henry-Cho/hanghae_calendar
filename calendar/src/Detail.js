@@ -1,13 +1,7 @@
 import React, { useRef } from "react";
 import styled from "styled-components";
 
-import { connect } from "react-redux";
-import {
-  loadBucket,
-  createBucket,
-  addBucketFB,
-  loadBucketFB,
-} from "./redux/modules/bucket";
+import { addBucketFB } from "./redux/modules/bucket";
 import { useDispatch } from "react-redux";
 import TextField from "@material-ui/core/TextField";
 
@@ -45,6 +39,11 @@ const Detail = (props) => {
             let date_info = dateText.current.value.split("T");
             let date = date_info[0];
             let time = date_info[1];
+
+            if ((text === "") | (date === "")) {
+              alert("날짜와 텍스트를 입력하세요!!!");
+              return;
+            }
 
             let schedule = {
               title: text,

@@ -4,8 +4,14 @@ import dayGridPlugin from "@fullcalendar/daygrid";
 import interactionPlugin from "@fullcalendar/interaction";
 import styled from "styled-components";
 import { useSelector, useDispatch } from "react-redux";
-import { loadBucketFB, updateBucketFB } from "./redux/modules/bucket";
+import {
+  loadBucketFB,
+  updateBucketFB,
+  deleteBucketFB,
+  filterBucketFB,
+} from "./redux/modules/bucket";
 import Modal from "react-modal";
+import "./style.css";
 
 Modal.setAppElement("#root");
 
@@ -30,6 +36,7 @@ const DemoApp = (props) => {
   const closeModal = () => {
     setModalIsOpen(false);
   };
+
   // load items from firebase
   React.useEffect(() => {
     dispatch(loadBucketFB());
@@ -41,29 +48,53 @@ const DemoApp = (props) => {
       date: bucket.date,
       id: bucket.id,
       color: bucket.completed ? "#F45866" : "#F49390",
+      start: bucket.date + "T" + bucket.time,
+      allDay: false,
     };
   });
+
+  console.log(schedule);
 
   return (
     <CalendarFrame>
       <FullCalendar
         plugins={[dayGridPlugin, interactionPlugin]}
         initialView="dayGridMonth"
+        displayEventTime={true}
         weekends={false}
         events={schedule}
         eventClick={(info) => {
           openModal(info);
         }}
       ></FullCalendar>
-      <ButtonStyle
-        onClick={() => {
-          props.history.push("/add_new");
-        }}
-      >
-        +
-      </ButtonStyle>
+      <ButtonFrame>
+        <ButtonStyle
+          onClick={() => {
+            props.history.push("/add_new");
+          }}
+        >
+          <span>+</span>
+        </ButtonStyle>
+
+        <ButtonStyle
+          onClick={() => {
+            dispatch(filterBucketFB());
+          }}
+          style={{ background: "#F45866" }}
+        >
+          <span style={{ transform: "translateX(-7px)" }}>✔</span>
+        </ButtonStyle>
+        <ButtonStyle
+          onClick={() => {
+            dispatch(loadBucketFB());
+          }}
+          style={{ background: "#F49390" }}
+        >
+          <span style={{ transform: "translateX(-12px)" }}>All</span>
+        </ButtonStyle>
+      </ButtonFrame>
       <ModalFrame>
-        <Modal isOpen={modalIsOpen}>
+        <Modal isOpen={modalIsOpen} className="Modal">
           <h2>
             {name} {date_all}
           </h2>
@@ -76,7 +107,14 @@ const DemoApp = (props) => {
             >
               일정 완료
             </button>
-            <button> 일정 삭제하기 </button>
+            <button
+              onClick={() => {
+                dispatch(deleteBucketFB(id));
+                closeModal();
+              }}
+            >
+              일정 삭제하기
+            </button>
             <button onClick={closeModal}> 닫기 </button>
           </ModalBtn>
         </Modal>
@@ -86,16 +124,30 @@ const DemoApp = (props) => {
 };
 
 const ButtonStyle = styled.button`
-  width: 80px;
-  height: 80px;
+  width: 30px;
+  height: 30px;
   padding: 20px;
   background: red;
   border-radius: 50%;
-  position: relative;
-  top: -100px;
-  left: 650px;
   color: white;
-  z-index: 5;
+  font-size: 24px;
+  border: none;
+  & > span {
+    line-height: 5px;
+    transform: translateX(-6px);
+    display: block;
+    text-align: center;
+  }
+  :hover {
+    transform: scale(1.1);
+    transition: transform 200ms ease-in-out;
+  }
+
+  :focus {
+    outline: none;
+    transform: scale(1.1);
+    transition: transform 200ms ease-in-out;
+  }
 `;
 
 const ModalFrame = styled.div`
@@ -106,8 +158,6 @@ const ModalFrame = styled.div`
 
 const CalendarFrame = styled.div`
   z-index: 0;
-  width: 800px;
-  height: 800px;
   position: relative;
 `;
 
@@ -118,5 +168,21 @@ const ModalBtn = styled.div`
   display: flex;
   justify-content: space-evenly;
   align-items: center;
+`;
+
+const ButtonFrame = styled.div`
+  width: 200px;
+  height: 200px;
+  background: none;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+  align-items: center;
+  position: relative;
+  top: -200px;
+  left: 700px;
+  z-index: 5;
+  border: 2px solid #f49390;
+  border-radius: 10px;
 `;
 export default DemoApp;

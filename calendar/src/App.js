@@ -28,8 +28,9 @@ class App extends React.Component {
 }
 
 const AppFrame = styled.div`
-  display: flex;
-  justify-content: center;
+  padding: 50px;
+  margin: 10px;
+  width: 60%;
 `;
 
 export default withRouter(App);

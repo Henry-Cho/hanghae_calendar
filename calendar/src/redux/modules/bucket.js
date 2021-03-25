@@ -7,6 +7,8 @@ const bucket_db = firestore.collection("bucket");
 const LOAD = "bucket/LOAD";
 const CREATE = "bucket/CREATE";
 const UPDATE = "bucket/UPDATE";
+const DELETE = "bucket/DELETE";
+const FILTER = "bucket/FILTER";
 
 // initial state
 
@@ -29,6 +31,16 @@ export const createBucket = (schedule) => {
 // 특정 아이템의 completed 상태를 받는 것!
 export const updateBucket = (bucket) => {
   return { type: UPDATE, bucket };
+};
+
+// 특정 아이템을 삭제하기
+export const deleteBucket = (bucket) => {
+  return { type: DELETE, bucket };
+};
+
+// 완료된 것만 load 해주기
+export const filterBucket = (bucket) => {
+  return { type: FILTER, bucket };
 };
 
 // Firebase 와 통신하는 함수들
@@ -85,6 +97,48 @@ export const updateBucketFB = (bucket) => {
   };
 };
 
+export const deleteBucketFB = (bucket) => {
+  return function (dispatch) {
+    bucket_db
+      .doc(bucket)
+      .delete()
+      .then(() => {
+        dispatch(deleteBucket(bucket));
+        console.log("Document successfully deleted!");
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
+};
+
+export const filterBucketFB = () => {
+  return function (dispatch) {
+    bucket_db.get().then((docs) => {
+      //console.log(bucket_db);
+      // 리덕스에 넣기 위한 친구
+      let bucket_data = [];
+
+      docs.forEach((doc) => {
+        if (doc.exists) {
+          bucket_data = [...bucket_data, { id: doc.id, ...doc.data() }];
+          //console.log(bucket_data);
+        }
+      });
+
+      let completed_bucket = [];
+      // Reducer 와 연결시켜준다
+      bucket_data.filter((bucket) => {
+        if (bucket.completed) {
+          completed_bucket = [...completed_bucket, bucket];
+        }
+      });
+      console.log(completed_bucket);
+      dispatch(filterBucket(completed_bucket));
+    });
+  };
+};
+
 // Reducer
 export default function reducer(state = initialState, action = {}) {
   switch (action.type) {
@@ -129,13 +183,30 @@ export default function reducer(state = initialState, action = {}) {
       console.log(bucket_list);
       return { list: bucket_list };
     }
-    //   if (idx === action.bucket) {
-    //     return { ...l, completed: true };
-    //   } else {
-    //     return l;
-    //   }
-    // });
-    // return { list: bucket_list };
+
+    case "bucket/DELETE": {
+      const bucket_list = state.list.filter((l, idx) => {
+        if (l.id !== action.bucket) {
+          return l;
+        }
+      });
+      return { list: bucket_list };
+    }
+    case "bucket/FILTER": {
+      let bucket_data = [...action.bucket];
+
+      const bucket_ids = action.bucket.map((r, idx) => {
+        return r.id;
+      });
+
+      action.bucket.filter((r, idx) => {
+        if (bucket_ids.indexOf(r.id) === -1) {
+          bucket_data = [...bucket_data, r];
+        }
+      });
+
+      return { list: bucket_data };
+    }
 
     default:
       return state;
