@@ -28,9 +28,9 @@ class App extends React.Component {
 }
 
 const AppFrame = styled.div`
-  padding: 50px;
+  padding: 10px;
   margin: 10px;
-  width: 60%;
+  width: 90%;
 `;
 
 export default withRouter(App);

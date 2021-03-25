@@ -95,27 +95,27 @@ const DemoApp = (props) => {
       </ButtonFrame>
       <ModalFrame>
         <Modal isOpen={modalIsOpen} className="Modal">
-          <h2>
-            {name} {date_all}
-          </h2>
+          <ModalTitle>
+            {name} <hr /> {date_all.split("T")[0]}
+          </ModalTitle>
           <ModalBtn>
-            <button
+            <BtnInModal
               onClick={() => {
                 dispatch(updateBucketFB(id));
                 closeModal();
               }}
             >
               일정 완료
-            </button>
-            <button
+            </BtnInModal>
+            <BtnInModal
               onClick={() => {
                 dispatch(deleteBucketFB(id));
                 closeModal();
               }}
             >
               일정 삭제하기
-            </button>
-            <button onClick={closeModal}> 닫기 </button>
+            </BtnInModal>
+            <BtnInModal onClick={closeModal}> 닫기 </BtnInModal>
           </ModalBtn>
         </Modal>
       </ModalFrame>
@@ -141,6 +141,7 @@ const ButtonStyle = styled.button`
   :hover {
     transform: scale(1.1);
     transition: transform 200ms ease-in-out;
+    cursor: pointer;
   }
 
   :focus {
@@ -161,10 +162,27 @@ const CalendarFrame = styled.div`
   position: relative;
 `;
 
+const BtnInModal = styled.button`
+  padding: 20px 20px 20px 20px;
+  border: none;
+  border-radius: 10px;
+  background: white;
+  color: #f49390;
+  font-weight: bolder;
+  :hover {
+    transform: scale(1.1);
+    transition: transform 200ms ease-in-out;
+    cursor: pointer;
+  }
+
+  :focus {
+    outline: none;
+  }
+`;
+
 const ModalBtn = styled.div`
   width: 400px;
-  height: 400px;
-  background: yellow;
+  height: 100px;
   display: flex;
   justify-content: space-evenly;
   align-items: center;
@@ -178,11 +196,19 @@ const ButtonFrame = styled.div`
   flex-direction: column;
   justify-content: space-evenly;
   align-items: center;
-  position: relative;
-  top: -200px;
-  left: 700px;
+  position: fixed;
+  top: 350px;
+  left: 940px;
   z-index: 5;
-  border: 2px solid #f49390;
+  border-radius: 10px;
+`;
+
+const ModalTitle = styled.h2`
+  color: #f49390;
+  background: white;
+  text-align: center;
+  width: 80%;
+  padding: 20px;
   border-radius: 10px;
 `;
 export default DemoApp;
